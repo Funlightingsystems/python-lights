@@ -1,0 +1,1 @@
+This is the python script that receives the Artnet data, processes it and spits it out over serial to an arduino. This script needs to be able to have multiple occurrences of it running simultaneously without interferance. The code needs to spit out the serial data so that it doesn't matter if an arduino is connected or if a raspberry pi pico is connected.
