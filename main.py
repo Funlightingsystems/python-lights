@@ -1,42 +1,23 @@
-import artnet
-import serial
+import requests
+import RPi.GPIO as GPIO
+import time
 
-# Set up the Artnet receiver
-receiver = artnet.dmx.DmxReceiver()
-receiver.start()
-
-# Set up the serial port for the Arduino
-serial_port = serial.Serial('/dev/ttyACM0', 9600)
-
-# Define the Artnet device to receive packets from
-device_ip = '192.168.1.100'
-device_port = 6454
-
-# Define the DMX channels for each color
-red_channel = 1
-green_channel = 2
-blue_channel = 3
-
-# Define the DMX channel for overall brightness or intensity
-brightness_channel = 4
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(17, GPIO.OUT)
 
 while True:
-    # Receive an Artnet packet from the device
-    packet = receiver.get()
+    try:
+        response = requests.get('http://localhost:9090/get_dmx?u=1')
+        data = response.json()
+        channel_1_value = data['dmx'][0]
+        print(channel_1_value)
+        if channel_1_value > 127:
+            GPIO.output(17, GPIO.HIGH)
+        else:
+            GPIO.output(17, GPIO.LOW)
 
-    # Check if the packet came from the desired device
-    if packet.get('address')[0] == device_ip and packet.get('address')[1] == device_port:
-        # Get the RGB data from the packet
-        red = packet.get('data')[red_channel]
-        green = packet.get('data')[green_channel]
-        blue = packet.get('data')[blue_channel]
+    except:
+        print('Error fetching data')
 
-        # Get the brightness data from the packet
-        brightness = packet.get('data')[brightness_channel]
+    time.sleep(0.2)
 
-        # Print the RGB data and brightness to the terminal
-        print(f"Red: {red}, Green: {green}, Blue: {blue}, Brightness: {brightness}")
-
-        # Send the RGB data and brightness to the Arduino
-        data = bytes([red, green, blue, brightness])
-        serial_port.write(data)
