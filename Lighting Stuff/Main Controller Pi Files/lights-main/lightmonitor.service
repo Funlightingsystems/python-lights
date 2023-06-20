@@ -1,0 +1,10 @@
+[Unit]
+Description=LightMonitor
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/node /home/pi/monitor/clients/generic.js
+
+[Install]
+WantedBy=multi-user.target

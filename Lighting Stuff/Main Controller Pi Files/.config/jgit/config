@@ -1,0 +1,3 @@
+[filesystem "Raspbian|11.0.18|/dev/root"]
+	timestampResolution = 24000 nanoseconds
+	minRacyThreshold = 17945 microseconds
